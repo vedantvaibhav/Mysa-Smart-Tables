@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      margin: 0;
+      padding: 24px 20px;
+      color: #333;
+      background-color: #000;
+      font-weight: 400; /* Set default font weight to regular */
+    }
+
+    .container {
+      display: flex;
+      width: 350px;
+      padding: 24px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+      background: #000;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .view-section {
+      display: none; /* Hidden by default */
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 8px;
+    }
+
+    h2 {
+      margin: 0 0 36px 0;
+      color: #FFF;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    select {
+      display: flex;
+      height: 40px;
+      padding: 10px;
+      justify-content: space-between;
+      align-items: center;
+      align-self: stretch; 
+      border-radius: 8px;
+      background: #141416;
+      font-size: 14px;
+      margin-bottom: 0;
+      color: #B0B0B0; /* Default text color for unselected state */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23B0B0B0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      transition: all 0.2s ease;
+    }
+
+    select:hover {
+      background-color: #1a1a1a;
+    }
+
+    select:required:invalid {
+      color: #B0B0B0;
+    }
+
+    select option[value=""] {
+      display: none;
+    }
+
+    select option {
+      background-color: #1a1a1a;
+      color: #E0E0E0;
+      padding-right: 30px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      transition: background-color 0.2s;
+    }
+
+    select.selected-value {
+      color: #FFFFFF;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+
+    select option:checked {
+      background-color: #2C2C2C;
+      color: #FFFFFF;
+    }
+
+    button {
+      background: #18A0FB;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 40px; /* Fixed height */
+      min-height: 40px; /* Ensure minimum height */
+      box-sizing: border-box; /* Include padding in height calculation */
+    }
+
+    button:hover {
+      background: #0D8DE3;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #dc2626;
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .error.active {
+      display: block;
+    }
+
+    .success {
+      color: #059669;
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .success.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 14px; /* Smaller spinner */
+      height: 14px; /* Smaller spinner */
+      border: 2px solid #ffffff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+      margin: 0; /* Remove any margin */
+      flex-shrink: 0; /* Prevent spinner from shrinking */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .view-options {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .view-option input[type="radio"] {
+      margin-right: 4px;
+    }
+
+    .view-option label {
+      font-size: 14px;
+    }
+
+    .view-options-segmented {
+      display: flex;
+      margin-bottom: 12px;
+      border: none; /* Remove any default border */
+      border-radius: 8px; /* Apply rounded corners to the container */
+      overflow: hidden; /* Ensure rounded corners clip content */
+      background-color: #1C1C1F; /* Dark background matching the image */
+      align-items: center; /* Align items vertically to the center */
+      padding: 2px 8px; /* Add 2px vertical and 8px horizontal padding */
+    }
+
+    .segmented-button {
+      flex: none; /* Explicitly prevent flexing */
+      width: 172px !important; /* Set a fixed width */
+      text-align: center;
+      padding: 12px 24px; /* Adjust padding as needed */
+      font-size: 16px; /* Adjust font size */
+      font-weight: 500; /* Adjust font weight */
+      cursor: pointer;
+      background-color: transparent; /* Make inactive background transparent again */
+      color: #FFF; /* White text for both states */
+      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Add smoother transition */
+      box-sizing: border-box; /* Include padding and border in element's total width */
+    }
+
+    .segmented-button:not(.active):hover {
+      color: #656565; /* Lighter text color on hover for unselected buttons */
+    }
+
+    .segmented-button input[type="radio"] {
+      display: none;
+    }
+
+    .segmented-button.active {
+        background-color: #636366; /* Grey background for the active state */
+        height: 28px;
+        width: 172px !important; /* Set a fixed width */
+        padding: 6px 8px 6.002px 8px; /* Specific padding for active state */
+        justify-content: center; /* Keep justify-content for text centering */
+        align-items: center; /* Keep align-items for vertical centering */
+        flex: none; /* Explicitly prevent flexing */
+        border-radius: 7px;
+        border: 0.5px solid rgba(0, 0, 0, 0.04);
+        box-sizing: border-box; /* Ensure consistent box-sizing */
+    }
+
+    .segmented-button:not(:last-child) {
+        border-right: none;
+    }
+
+    .segmented-button input[type="radio"]:disabled + span,
+    .segmented-button input[type="radio"]:disabled + label {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .segmented-button input[type="radio"]:disabled {
+        cursor: not-allowed;
+    }
+
+    .section-label {
+        color: #888; /* Match image label color */
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 400;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 0;
+      background: #FFF; /* White background */
+      color: #000; /* Black text */
+      cursor: pointer;
+      font-weight: 500; /* Keep button font weight as 500 */
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: #f0f0f0; /* Slightly darker white on hover */
+    }
+
+    button:disabled {
+      background: #444; /* Darker background when disabled */
+      color: #888; /* Lighter text when disabled */
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #f87171; /* Lighter red for errors on dark background */
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .error.active {
+      display: block;
+    }
+
+    .success {
+      color: #4ade80; /* Lighter green for success on dark background */
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .success.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #000000;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none; /* Hidden by default */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .view-options-segmented {
+      display: flex;
+      margin-bottom: 12px;
+      border: 1px solid #444; /* Darker border for segmented control */
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #2C2C2C; /* Match dropdown background */
+    }
+
+    .segmented-button {
+      flex-grow: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #2C2C2C; /* Inactive background */
+      color: #E0E0E0; /* Inactive text color */
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .segmented-button input[type="radio"] {
+      display: none; /* Hide the actual radio button */
+    }
+
+    .segmented-button.active {
+        background-color: #5A5A5A; /* Softer dark grey background for active state */
+        color: #FFF; /* White text for active state */
+    }
+
+    .segmented-button:not(:last-child) {
+        border-right: 1px solid #444; /* Darker border between segments */
+    }
+
+     .segmented-button input[type="radio"]:disabled + span {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .segmented-button input[type="radio"]:disabled + span {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+     .segmented-button input[type="radio"]:disabled + label {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .segmented-button input[type="radio"]:disabled {
+        cursor: not-allowed;
+    }
+
+    /* Corrected disabled styling */
+    .segmented-button input[type="radio"]:disabled + span {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .view-options-segmented {
+      display: flex;
+      margin-bottom: 12px;
+      border: none; /* Remove border */
+      border-radius: 8px; /* Match dropdown border-radius */
+      overflow: hidden;
+      background-color: #1C1C1F; /* Match dropdown background */
+    }
+
+    .segmented-button {
+      flex-grow: 1;
+      text-align: center;
+      padding: 10px 0; /* Match dropdown padding vertically */
+      font-size: 14px;
+      cursor: pointer;
+      background-color: transparent; /* Inactive background transparent to show container background */
+      color: #E0E0E0; /* Inactive text color */
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .segmented-button input[type="radio"] {
+      display: none; /* Hide the actual radio button */
+    }
+
+    .segmented-button.active {
+        background-color: #5A5A5A; /* Softer dark grey background for active state */
+        color: #FFF; /* White text for active state */
+    }
+
+    .segmented-button:not(:last-child) {
+        border-right: none; /* Remove border between segments */
+    }
+
+     .segmented-button input[type="radio"]:disabled + span {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .segmented-button input[type="radio"]:disabled {
+        cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>Select Module and Tab</h2>
+  <div class="section">
+    <select id="moduleSelect">
+      <option value="Payables">Payables</option>
+      <option value="Payments">Payments</option>
+      <option value="Accounting">Accounting</option>
+      <option value="Smart Statements">Smart Statements</option>
+      <option value="Reports">Reports</option>
+      <option value="Team Settings">Team Settings</option>
+      <option value="Vendors">Vendors</option>
+    </select>
+    <select id="presetSelect">
+      <!-- Will be populated dynamically -->
+    </select>
+
+    <div class="view-section">
+      <label class="section-label">Select a view</label>
+      <div class="view-options-segmented">
+        <label for="defaultView" class="segmented-button">
+          <input type="radio" id="defaultView" name="viewType" value="default" checked disabled>
+          <span>Default columns</span>
+        </label>
+        <label for="allColumnsView" class="segmented-button">
+          <input type="radio" id="allColumnsView" name="viewType" value="all" disabled>
+          <span>All columns</span>
+        </label>
+      </div>
+    </div>
+
+    <button id="generate">Generate Table<span class="spinner"></span></button>
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
+  </div>
+  <script>
+    const moduleSelect = document.getElementById('moduleSelect');
+    const presetSelect = document.getElementById('presetSelect');
+    const generateBtn = document.getElementById('generate');
+    const errorDiv = document.getElementById('error');
+    const successDiv = document.getElementById('success');
+    const defaultViewRadio = document.getElementById('defaultView');
+    const allColumnsViewRadio = document.getElementById('allColumnsView');
+    const viewOptionsSegmented = document.querySelector('.view-options-segmented');
+    const viewSection = document.querySelector('.view-section'); // Get reference to view section
+    const spinner = generateBtn.querySelector('.spinner'); // Get reference to the spinner element
+
+    // Function to update the active class on segmented buttons
+    function updateSegmentedButtons() {
+        viewOptionsSegmented.querySelectorAll('.segmented-button').forEach(label => {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio.checked) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+
+    // Call initially to set the active class for the default checked radio
+    updateSegmentedButtons();
+
+    // Check initial value of moduleSelect and add selected-value class if needed
+    if (moduleSelect.value) {
+        moduleSelect.classList.add('selected-value');
+    }
+
+    const moduleTabs = {
+      "Payables": ["My Approvals", "Finance Review", "All Drafts", "Drafts", "My Uploads", "All Bills", "Rejected"],
+      "Payments": ["Ready to Pay", "In Auth", "All Transactions", "Rejected"],
+      "Accounting": ["Needs Review", "Ready to sync", "Synced", "Excluded"],
+      "Smart Statements": ["Smart Statements"],
+      "Reports": ["AP Overdue", "TDS"],
+      "Team Settings": ["Active/Inactive"],
+      "Vendors": ["Active/Inactive", "Invited"]
+    };
+
+    // Initialize tabs dropdown if Payables is selected by default
+    if (moduleSelect.value === "Payables") {
+      presetSelect.disabled = false;
+      
+      // Add placeholder option
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Choose a tab...';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      presetSelect.appendChild(placeholder);
+      
+      // Add the actual tab options
+      moduleTabs["Payables"].forEach(tab => {
+        const option = document.createElement('option');
+        option.value = tab;
+        option.textContent = tab;
+        presetSelect.appendChild(option);
+      });
+    }
+
+    function setLoading(isLoading) {
+      generateBtn.disabled = isLoading;
+      errorDiv.classList.remove('active');
+      successDiv.classList.remove('active');
+
+      spinner.style.display = isLoading ? 'inline-block' : 'none';
+
+      // Find the actual text node inside the button
+      const textNode = [...generateBtn.childNodes].find(node => node.nodeType === Node.TEXT_NODE);
+
+      if (isLoading) {
+        if (textNode && !generateBtn.dataset.originalText) {
+          generateBtn.dataset.originalText = textNode.textContent.trim();
+        }
+        if (textNode) {
+          textNode.textContent = 'Creating... ';
+        }
+      } else {
+        if (textNode && generateBtn.dataset.originalText) {
+          textNode.textContent = generateBtn.dataset.originalText + ' ';
+          delete generateBtn.dataset.originalText;
+        }
+      }
+    }
+
+    // Populate tabs dropdown based on module selection
+    moduleSelect.addEventListener('change', () => {
+      const selectedModule = moduleSelect.value;
+      
+      // Add/remove selected-value class based on value
+      if (selectedModule) {
+        moduleSelect.classList.add('selected-value');
+      } else {
+        moduleSelect.classList.remove('selected-value');
+      }
+      
+      // Clear existing options and disable tabs dropdown initially
+      presetSelect.innerHTML = '';
+      presetSelect.disabled = true;
+      generateBtn.disabled = true;
+      errorDiv.classList.remove('active');
+      successDiv.classList.remove('active');
+
+      // Disable view options and hide view section
+      defaultViewRadio.disabled = true;
+      allColumnsViewRadio.disabled = true;
+      defaultViewRadio.checked = true; // Reset to default view
+      updateSegmentedButtons(); // Update active class
+      viewSection.style.display = 'none'; // Hide view section
+
+      if (selectedModule && moduleTabs[selectedModule]) {
+        const tabs = moduleTabs[selectedModule];
+        
+        // Enable the dropdown
+        presetSelect.disabled = false;
+        
+        if (tabs.length === 1) {
+          // If only one tab, preselect it
+          const option = document.createElement('option');
+          option.value = tabs[0];
+          option.textContent = tabs[0];
+          presetSelect.appendChild(option);
+          presetSelect.value = tabs[0];
+          presetSelect.classList.add('selected-value'); // Add selected-value class
+          
+          // Enable generate button and view options
+          generateBtn.disabled = false;
+          defaultViewRadio.disabled = false;
+          allColumnsViewRadio.disabled = false;
+          viewSection.style.display = 'flex';
+          updateSegmentedButtons();
+        } else {
+          // If multiple tabs, add placeholder
+          const placeholder = document.createElement('option');
+          placeholder.value = '';
+          placeholder.textContent = 'Choose a tab...';
+          placeholder.disabled = true;
+          placeholder.selected = true;
+          presetSelect.appendChild(placeholder);
+          presetSelect.classList.remove('selected-value'); // Remove selected-value class
+          
+          // Add the actual tab options
+          tabs.forEach(tab => {
+            const option = document.createElement('option');
+            option.value = tab;
+            option.textContent = tab;
+            presetSelect.appendChild(option);
+          });
+        }
+      }
+    });
+
+    // Enable generate button and view options only when a tab is selected
+    presetSelect.addEventListener('change', () => {
+      const tabSelected = !!presetSelect.value;
+
+      // Add/remove selected-value class based on value
+      if (presetSelect.value) {
+        presetSelect.classList.add('selected-value');
+      } else {
+        presetSelect.classList.remove('selected-value');
+      }
+
+      generateBtn.disabled = !tabSelected;
+      defaultViewRadio.disabled = !tabSelected;
+      allColumnsViewRadio.disabled = !tabSelected;
+      errorDiv.classList.remove('active');
+      successDiv.classList.remove('active');
+      updateSegmentedButtons();
+
+      // Show or hide the view section based on tab selection
+      if (tabSelected) {
+        viewSection.style.display = 'flex';
+      } else {
+        viewSection.style.display = 'none';
+      }
+    });
+
+    generateBtn.addEventListener('click', () => {
+      const selectedModule = moduleSelect.value;
+      const selectedTab = presetSelect.value;
+      const selectedViewType = document.querySelector('input[name="viewType"]:checked').value;
+
+      if (!selectedModule) {
+        showError('Please select a module');
+        return;
+      }
+
+      if (!selectedTab) {
+        showError('Please select a tab');
+        return;
+      }
+      
+      setLoading(true);
+      parent.postMessage({
+        pluginMessage: {
+          type: 'generate-preset-table',
+          module: selectedModule,
+          preset: selectedTab,
+          viewType: selectedViewType // Include the selected view type
+        }
+      }, '*');
+    });
+
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.add('active');
+      successDiv.classList.remove('active');
+      // No timeout here, user needs to see the error until they change selection or try again
+    }
+
+    function showSuccess(message) {
+      successDiv.textContent = message;
+      successDiv.classList.add('active');
+      errorDiv.classList.remove('active');
+      setTimeout(() => {
+        successDiv.classList.remove('active');
+      }, 3000);
+    }
+
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      
+      if (message.type === 'generation-complete') {
+        showSuccess('Table generated successfully!');
+        setLoading(false);
+      } else if (message.type === 'generation-error') {
+        showError(message.error);
+        setLoading(false);
+      } else if (message.type === 'update-presets') {
+        presetSelect.innerHTML = '';
+        message.presets.forEach(preset => {
+          const option = document.createElement('option');
+          option.value = preset;
+          option.textContent = preset;
+          presetSelect.appendChild(option);
+        });
+      }
+    };
+
+    // Add event listeners to the segmented buttons to update active class
+    viewOptionsSegmented.addEventListener('change', updateSegmentedButtons);
+  </script>
+</body>
+</html> 

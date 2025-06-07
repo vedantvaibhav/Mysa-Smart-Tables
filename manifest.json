@@ -1,0 +1,12 @@
+{
+  "name": "Mysa Smart Table",
+  "id": "1513147598606003584",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"]
+  }
+} 
