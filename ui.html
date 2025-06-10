@@ -775,6 +775,9 @@
           <option value="ERP Vendor">ERP Vendor</option>
           <option value="Status (Vendor)">Status (Vendor)</option>
           <option value="Status (Team settings)">Status (Team settings)</option>
+          <option value="Custom column 1">Custom column 1</option>
+          <option value="Custom column 2">Custom column 2</option>
+          <option value="Custom column 3">Custom column 3</option>
         </select>
         <button id="clearColumnSelection" style="
           position: absolute;
@@ -797,7 +800,7 @@
         </div>
       </div>
       <div class="info-message">
-        <span>Select a dummy column if you need to add a new column that doesn't exist in the component</span>
+        <span>Search & select a custom column if you need to add a new column that doesn't exist in the component</span>
       </div>
       <button id="generateCustom" style="margin-top: 16px;"><span id="generateCustomText">Create Custom Table</span><span class="spinner"></span></button>
       <div id="customError" class="error"></div>
@@ -1058,67 +1061,61 @@
       }, 3000);
     }
 
-    // Combined window.onmessage handler
-    window.onmessage = (event) => {
-      const message = event.data.pluginMessage;
-      
-      if (message.type === 'update-presets') {
-        presetSelect.innerHTML = '';
-        message.presets.forEach(preset => {
-          const option = document.createElement('option');
-          option.value = preset;
-          option.textContent = preset;
-          presetSelect.appendChild(option);
-        });
-      } else if (message.type === 'all-columns-data') {
-        allColumns = message.columns;
-        const dropdownItems = dropdownList.querySelector('.dropdown-items');
-        dropdownItems.innerHTML = '';
-        
-        Object.keys(allColumns).forEach(columnName => {
-          const item = document.createElement('div');
-          item.className = 'dropdown-item';
-          
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.checked = selectedColumns.has(columnName);
-          
-          const label = document.createElement('span');
-          label.textContent = columnName;
-          
-          item.appendChild(checkbox);
-          item.appendChild(label);
-          item.dataset.value = columnName;
-          
-          if (selectedColumns.has(columnName)) {
-            item.classList.add('selected');
-          }
-          
-          item.addEventListener('click', (e) => {
-            // Prevent click event when clicking the checkbox
-            if (e.target === checkbox) {
-              e.stopPropagation();
-            }
-            
-            if (selectedColumns.has(columnName)) {
-              selectedColumns.delete(columnName);
-              item.classList.remove('selected');
-              checkbox.checked = false;
-            } else {
-              selectedColumns.add(columnName);
-              item.classList.add('selected');
-              checkbox.checked = true;
-            }
-            updateSelectDisplay();
-          });
-          
-          dropdownItems.appendChild(item);
-        });
-      }
-    };
-
     // Add event listeners to the segmented buttons to update active class
     viewOptionsSegmented.addEventListener('change', updateSegmentedButtons);
+
+    // COMBINED window.onmessage handler to avoid overwrites
+    window.onmessage = (event) => {
+      // Ensure the message is from the parent frame (the plugin)
+      // Removed: if (event.source !== parent) { ... }
+
+      const message = event.data.pluginMessage;
+      if (!message) {
+        console.log('Received message without pluginMessage (ignoring):', event.data);
+        return;
+      }
+
+      console.log('UI received plugin message:', message.type, message);
+
+      switch (message.type) {
+        case 'generation-complete':
+          showSuccess('Table generated successfully!');
+          setLoading(false);
+          break;
+        case 'generation-error':
+          showError(message.error);
+          setLoading(false);
+          break;
+        case 'update-presets':
+          presetSelect.innerHTML = '';
+          message.presets.forEach(preset => {
+            const option = document.createElement('option');
+            option.value = preset;
+            option.textContent = preset;
+            presetSelect.appendChild(option);
+          });
+          break;
+        case 'custom-generation-complete':
+          customSuccessDiv.textContent = 'Custom table generated successfully!';
+          customSuccessDiv.classList.add('active');
+          customErrorDiv.classList.remove('active');
+          setCustomLoading(false);
+          break;
+        case 'custom-generation-error':
+          customErrorDiv.textContent = message.error || 'An error occurred while generating the table';
+          customErrorDiv.classList.add('active');
+          customSuccessDiv.classList.remove('active');
+          setCustomLoading(false);
+          break;
+        // case 'all-columns-data': // This case was previously removed and is no longer needed
+        //   allColumns = message.columns;
+        //   populateDropdownList(); // Re-populate dropdown with new data if needed (currently done from options)
+        //   break;
+        default:
+          console.log('UI received unknown message type:', message.type);
+          break;
+      }
+    };
 
     // Add tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -1159,10 +1156,10 @@
 
       if (isLoading) {
         spinner.style.display = 'inline-block';
-        generateCustomText.textContent = 'Creating... '; // Update text through the span
+        generateCustomText.textContent = 'Creating... ';
       } else {
         spinner.style.display = 'none';
-        generateCustomText.textContent = 'Generate Custom Table '; // Update text through the span
+        generateCustomText.textContent = 'Create Custom Table ';
       }
     }
 
@@ -1182,14 +1179,65 @@
 
     // Populate dropdown list
     function populateDropdownList() {
-      dropdownList.innerHTML = `
-        <div class="dropdown-search">
-          <input type="text" placeholder="Search columns..." />
-        </div>
-        <div class="dropdown-items"></div>
-      `;
+      const dropdownItems = dropdownList.querySelector('.dropdown-items');
+      if (!dropdownItems) {
+        dropdownList.innerHTML = `
+          <div class="dropdown-search">
+            <input type="text" placeholder="Search columns..." />
+          </div>
+          <div class="dropdown-items"></div>
+        `;
+      }
 
       const searchInput = dropdownList.querySelector('input');
+      const itemsContainer = dropdownList.querySelector('.dropdown-items');
+      
+      // Clear existing items
+      itemsContainer.innerHTML = '';
+      
+      // Add all options from the select element
+      Array.from(columnSelect.options).forEach(option => {
+        if (option.value) { // Skip the placeholder option
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = selectedColumns.has(option.value);
+          
+          const label = document.createElement('span');
+          label.textContent = option.textContent;
+          
+          item.appendChild(checkbox);
+          item.appendChild(label);
+          item.dataset.value = option.value;
+          
+          if (selectedColumns.has(option.value)) {
+            item.classList.add('selected');
+          }
+          
+          item.addEventListener('click', (e) => {
+            if (e.target === checkbox) {
+              e.stopPropagation();
+            }
+            
+            if (selectedColumns.has(option.value)) {
+              selectedColumns.delete(option.value);
+              item.classList.remove('selected');
+              checkbox.checked = false;
+            } else {
+              selectedColumns.add(option.value);
+              item.classList.add('selected');
+              checkbox.checked = true;
+            }
+            updateSelectDisplay();
+          });
+          
+          itemsContainer.appendChild(item);
+        }
+      });
+
+      // Add search functionality
       searchInput.addEventListener('input', (e) => {
         const searchText = e.target.value.toLowerCase();
         const items = dropdownList.querySelectorAll('.dropdown-item');
@@ -1202,13 +1250,6 @@
           }
         });
       });
-
-      // Get all columns from ALL_COLUMNS
-      parent.postMessage({
-        pluginMessage: {
-          type: 'get-all-columns'
-        }
-      }, '*');
     }
 
     // Update the select display
@@ -1258,7 +1299,7 @@
       
       // Convert Set to Array to maintain order
       const orderedColumns = Array.from(selectedColumns);
-      console.log('Selected columns:', orderedColumns);
+      console.log('Selected columns for generation:', orderedColumns);
       
       // Reset any previous states
       customErrorDiv.classList.remove('active');
@@ -1267,49 +1308,22 @@
       // Set loading state
       setCustomLoading(true);
       
-      // Set timeout for loading state
-      const loadingTimeout = setTimeout(() => {
-        console.log('Loading timeout reached');
-        setCustomLoading(false);
-        customErrorDiv.textContent = 'Generation timed out. Please try again.';
-        customErrorDiv.classList.add('active');
-      }, 10000); // 10 second timeout
-      
       // Send message to plugin
-      parent.postMessage({
-        pluginMessage: {
-          type: 'generate-custom-table',
-          columns: orderedColumns
-        }
-      }, '*');
-      
-      // Add one-time message handler for this generation
-      const messageHandler = (event) => {
-        const message = event.data.pluginMessage;
-        if (!message) return;
-        
-        console.log('Received plugin message:', message);
-        
-        if (message.type === 'custom-generation-complete') {
-          console.log('Custom generation completed');
-          clearTimeout(loadingTimeout);
-          customSuccessDiv.textContent = 'Custom table generated successfully!';
-          customSuccessDiv.classList.add('active');
-          customErrorDiv.classList.remove('active');
-          setCustomLoading(false);
-          window.removeEventListener('message', messageHandler);
-        } else if (message.type === 'custom-generation-error') {
-          console.log('Custom generation failed:', message.error);
-          clearTimeout(loadingTimeout);
-          customErrorDiv.textContent = message.error;
-          customErrorDiv.classList.add('active');
-          customSuccessDiv.classList.remove('active');
-          setCustomLoading(false);
-          window.removeEventListener('message', messageHandler);
-        }
-      };
-      
-      window.addEventListener('message', messageHandler);
+      try {
+        const message = {
+          pluginMessage: {
+            type: 'generate-custom-table',
+            columns: orderedColumns
+          }
+        };
+        console.log('Sending message to plugin:', message);
+        parent.postMessage(message, '*');
+      } catch (error) {
+        console.error('Error sending message to plugin:', error);
+        setCustomLoading(false);
+        customErrorDiv.textContent = 'Error communicating with plugin. Please try again.';
+        customErrorDiv.classList.add('active');
+      }
     });
 
     // Add event listener for clearing column selection

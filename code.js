@@ -1,4 +1,4 @@
-figma.showUI(__html__, { width: 400, height: 370 });
+figma.showUI(__html__, { width: 400, height: 420 });
 
 // Centralized column definitions with component keys
 const ALL_COLUMNS = {
@@ -76,7 +76,10 @@ const ALL_COLUMNS = {
   "Status (Accounting)": { name: "Status (Accounting)", type: "text", componentKey: '966756b8498df9ca06ee45b99455e6a12befea4e' },
   "ERP Vendor": { name: "ERP Vendor", type: "text", componentKey: '79a3dbfbdcdff2981115fd52ffe5bdcfd32facb0' },
   "Status (Vendor)": { name: "Status (Vendor)", type: "text", componentKey: '277f0b39e338a8b6c75adb28afbc83745dfca7f9' },
-  "Status (Team settings)": { name: "Status (Team settings)", type: "text", componentKey: '8156f010edf85d9dab0854e285333494119a5b17' }
+  "Status (Team settings)": { name: "Status (Team settings)", type: "text", componentKey: '8156f010edf85d9dab0854e285333494119a5b17' },
+  "Custom column 1": { name: "Custom column 1", type: "text", componentKey: '3cfe27f1085dbfebe6d344298ddc1d5c874d3700' },
+  "Custom column 2": { name: "Custom column 2", type: "text", componentKey: '3cfe27f1085dbfebe6d344298ddc1d5c874d3700' },
+  "Custom column 3": { name: "Custom column 3", type: "text", componentKey: '3cfe27f1085dbfebe6d344298ddc1d5c874d3700' }
 };
 
 // Table presets with their column configurations nested under modules
@@ -329,9 +332,10 @@ async function generateTable(tabName, columnNames) {
     figma.currentPage.selection = [tableFrame];
     figma.viewport.scrollAndZoomIntoView([tableFrame]);
 
+    console.log('Table generation completed in generateTable.');
     return tableFrame;
   } catch (error) {
-    console.error('Error generating table:', error);
+    console.error('Error generating table within generateTable function:', error);
     figma.notify(`Error generating table: ${error.message}`);
     return null;
   }
@@ -353,63 +357,33 @@ function getDefaultValueForType(type) {
 }
 
 figma.ui.onmessage = async (msg) => {
-  console.log('Received message:', msg);
-
-  if (msg.type === 'get-presets') {
-    const module = TABLE_PRESETS[msg.module];
-    if (module) {
-      const presets = Object.keys(module);
-      figma.ui.postMessage({
-        type: 'update-presets',
-        presets: presets
-      });
-    }
-  }
-
-  if (msg.type === 'generate-preset-table') {
+  console.log('Plugin received message:', msg.type, msg);
+  if (msg.type === 'generate-custom-table') {
     try {
-      console.log('Generating preset table:', msg.module, msg.preset, msg.viewType);
-      const module = TABLE_PRESETS[msg.module];
-      if (!module) {
-        throw new Error(`Unknown module: ${msg.module}`);
+      const columns = msg.columns;
+      if (!columns || columns.length === 0) {
+        throw new Error('No columns selected for custom table generation.');
       }
-      const preset = module[msg.preset];
-      if (!preset) {
-        throw new Error(`Unknown tab: ${msg.preset} in module ${msg.module}`);
-      }
-
-      let columnNamesToGenerate = [];
-
-      // Determine which columns to generate based on viewType and preset structure
-      if (preset.visibleColumns) { // For Payables module presets
-         columnNamesToGenerate = preset.visibleColumns;
-         if (msg.viewType === 'all' && preset.hiddenColumns) {
-            columnNamesToGenerate = [...columnNamesToGenerate, ...preset.hiddenColumns];
-         }
-      } else if (preset.columns) { // For other modules like Payments, Accounting, Vendor
-         columnNamesToGenerate = preset.columns;
-         // Note: The UI currently only shows 'default' and 'all' view options.
-         // If 'all' view should include more columns for these modules, they would need to be added to the 'columns' array or a separate 'hiddenColumns' array.
-         // For now, 'all' view for these modules will generate the same columns as the default view.
-      }
-
-      // Pass the selected column names to generateTable
-      const generatedTable = await generateTable(msg.preset, columnNamesToGenerate);
-
-      if (generatedTable) {
-        figma.ui.postMessage({ type: 'generation-complete' });
-      } else {
-        figma.ui.postMessage({
-          type: 'generation-error',
-          error: 'Table generation failed due to missing components or other issues.'
-        });
-      }
+      console.log('Generating custom table with columns:', columns);
+      await generateTable('Custom Table', columns);
+      console.log('About to post custom-generation-complete message.');
+      figma.ui.postMessage({ type: 'custom-generation-complete' });
     } catch (error) {
-      console.error('Error in table generation:', error);
-      figma.ui.postMessage({
-        type: 'generation-error',
-        error: error.message || 'Failed to generate table'
-      });
+      console.error('Error generating custom table:', error);
+      console.log('About to post custom-generation-error message.');
+      figma.ui.postMessage({ type: 'custom-generation-error', error: error.message });
+    }
+  } else if (msg.type === 'generate-preset-table') {
+    try {
+      const { module, preset, viewType } = msg;
+      console.log(`Generating preset table for module: ${module}, preset: ${preset}, viewType: ${viewType}`);
+      await createTableFromPreset(module, preset, viewType);
+      console.log('About to post generation-complete message.');
+      figma.ui.postMessage({ type: 'generation-complete' });
+    } catch (error) {
+      console.error('Error generating preset table:', error);
+      console.log('About to post generation-error message.');
+      figma.ui.postMessage({ type: 'generation-error', error: error.message });
     }
   }
 };
