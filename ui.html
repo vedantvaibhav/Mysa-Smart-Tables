@@ -9,6 +9,7 @@
       color: #333;
       background-color: #000;
       font-weight: 400; /* Set default font weight to regular */
+      overflow: visible; /* Allow content to overflow */
     }
 
     .container {
@@ -17,25 +18,29 @@
       padding: 24px 20px;
       flex-direction: column;
       align-items: flex-start;
-      gap: 36px;
+      gap: 16px;
       background: #000;
+      overflow: visible; /* Allow content to overflow */
     }
 
     .section {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 8px; /* Reduced gap between elements */
+      width: 100%;
+      position: relative; /* For dropdown positioning */
+      overflow: visible; /* Allow content to overflow */
     }
 
     .view-section {
       display: none; /* Hidden by default */
       flex-direction: column;
-      gap: 4px;
-      padding-top: 8px;
+      gap: 12px; /* Changed from 4px to 16px */
+      padding-top: 16px; /* Changed from 8px to 16px */
     }
 
     h2 {
-      margin: 0 0 36px 0;
+      margin: 0 0 16px 0;
       color: #FFF;
       font-size: 16px;
       font-weight: 400;
@@ -47,7 +52,7 @@
       border: 1px solid #e0e0e0;
       border-radius: 6px;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     select {
@@ -101,7 +106,12 @@
 
     select.selected-value {
       color: #FFFFFF;
+      padding-right: 46px; /* Space for x button (14px) + gap (12px) + chevron (20px) */
       background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+
+    select.selected-value option {
+      color: #B0B0B0;
     }
 
     select option:checked {
@@ -176,7 +186,7 @@
     .view-options {
       display: flex;
       gap: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 16px; /* Changed from 12px to 16px */
       align-items: center;
     }
 
@@ -190,13 +200,13 @@
 
     .view-options-segmented {
       display: flex;
-      margin-bottom: 12px;
-      border: none; /* Remove any default border */
-      border-radius: 8px; /* Apply rounded corners to the container */
-      overflow: hidden; /* Ensure rounded corners clip content */
-      background-color: #1C1C1F; /* Dark background matching the image */
-      align-items: center; /* Align items vertically to the center */
-      padding: 2px 8px; /* Add 2px vertical and 8px horizontal padding */
+      margin-bottom: 16px; /* Changed from 12px to 16px */
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #1C1C1F;
+      align-items: center;
+      padding: 2px 8px;
     }
 
     .segmented-button {
@@ -274,7 +284,7 @@
     }
 
     button:hover {
-      background: #f0f0f0; /* Slightly darker white on hover */
+      background: #d0d0d0; /* Slightly darker white on hover */
     }
 
     button:disabled {
@@ -419,42 +429,382 @@
     .segmented-button input[type="radio"]:disabled {
         cursor: not-allowed;
     }
+
+    .section-title{
+      color: #636366;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    /* Add new styles for tabs */
+    .tab-navigation {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #2C2C2C;
+      padding-bottom: 0px;
+    }
+
+    .tab-button {
+      padding: 8px 16px;
+      background: transparent !important;
+      border: none;
+      color: #636366;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin: 0;
+      width: auto;
+    }
+
+    .tab-button:hover {
+      color: rgb(150, 150, 161);
+      background: transparent !important;
+    }
+
+    .tab-button.active {
+      color: #FFFFFF;
+      border-radius: 0px;
+      border-bottom: 1.5px solid #ffffff;
+      background: transparent !important;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Add styles for multi-select */
+    .multi-select-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .multi-select {
+      width: 100%;
+      min-height: 40px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #141416;
+      color: #B0B0B0;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .multi-select option {
+      padding: 8px;
+      background: #141416;
+      color: #E0E0E0;
+    }
+
+    .multi-select option:checked {
+      background: #2C2C2C;
+      color: #FFFFFF;
+    }
+
+    .multi-select option:hover {
+      background: #2C2C2C;
+    }
+
+    /* Add styles for dropdown container */
+    .dropdown-container {
+      position: relative;
+      width: 100%;
+      overflow: visible;
+    }
+
+    /* Style for the dropdown list */
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #141416;
+      border-radius: 8px;
+      margin-top: 4px;
+      max-height: 240px;
+      overflow-y: hidden;
+      z-index: 1000;
+      display: none;
+    }
+
+    .dropdown-list.active {
+      display: block;
+    }
+
+    .dropdown-search {
+      padding: 8px;
+      border-bottom: 1px solid #2C2C2C;
+      position: sticky;
+      top: 0;
+      background: #141416;
+      z-index: 1;
+    }
+
+    .dropdown-search input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #2C2C2C;
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #FFFFFF;
+      font-size: 14px;
+    }
+
+    .dropdown-search input:focus {
+      outline: none;
+      border-color: #FFFFFF;
+    }
+
+    .dropdown-items {
+      max-height: calc(240px - 45px); /* Subtract search input height */
+      overflow-y: auto;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      min-height: 34px;
+      font-size: 14px;
+      color: #B0B0B0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 1px solid #2C2C2C;
+      border-radius: 3px;
+      background: #1a1a1a;
+      position: relative;
+      margin: 0; /* Ensure no default margins */
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .dropdown-item input[type="checkbox"]:checked {
+      background: #000000;
+      border-color: #FFFFFF;
+    }
+
+    .dropdown-item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 12px;
+      height: 12px;
+      background-image: url('data:image/svg+xml;utf8,<svg width="14" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 3L4.5 8.5L2 6" stroke="%23FDFDFD" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .dropdown-item span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0; /* Ensure no default margins */
+      padding: 0; /* Ensure no default padding */
+    }
+
+    .dropdown-item:hover {
+      background: #1a1a1a;
+      color: #FFFFFF;
+    }
+
+    .dropdown-item.selected {
+      background: #2C2C2C;
+      color: #FFFFFF;
+    }
+
+    .dropdown-item.hidden-item {
+      display: none;
+    }
+
+    .info-message {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #636366;
+    }
+
+    .info-message svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .info-message span {
+      line-height: 16px;
+    }
   </style>
 </head>
 <body>
-  <h2>Select Module and Tab</h2>
-  <div class="section">
-    <select id="moduleSelect">
-      <option value="Payables">Payables</option>
-      <option value="Payments">Payments</option>
-      <option value="Accounting">Accounting</option>
-      <option value="Smart Statements">Smart Statements</option>
-      <option value="Reports">Reports</option>
-      <option value="Team Settings">Team Settings</option>
-      <option value="Vendors">Vendors</option>
-    </select>
-    <select id="presetSelect">
-      <!-- Will be populated dynamically -->
-    </select>
-
-    <div class="view-section">
-      <label class="section-label">Select a view</label>
-      <div class="view-options-segmented">
-        <label for="defaultView" class="segmented-button">
-          <input type="radio" id="defaultView" name="viewType" value="default" checked disabled>
-          <span>Default columns</span>
-        </label>
-        <label for="allColumnsView" class="segmented-button">
-          <input type="radio" id="allColumnsView" name="viewType" value="all" disabled>
-          <span>All columns</span>
-        </label>
-      </div>
-    </div>
-
-    <button id="generate">Generate Table<span class="spinner"></span></button>
-    <div id="error" class="error"></div>
-    <div id="success" class="success"></div>
+  <div class="tab-navigation">
+    <button class="tab-button active" data-tab="default">Default</button>
+    <button class="tab-button" data-tab="create-new">Create New</button>
   </div>
+
+  <div id="default-tab" class="tab-content active">
+    <h2 class="section-title">Select Module and Tab</h2>
+    <div class="section">
+      <select id="moduleSelect">
+        <option value="Payables">Payables</option>
+        <option value="Payments">Payments</option>
+        <option value="Accounting">Accounting</option>
+        <option value="Smart Statements">Smart Statements</option>
+        <option value="Reports">Reports</option>
+        <option value="Team Settings">Team Settings</option>
+        <option value="Vendors">Vendors</option>
+      </select>
+      <select id="presetSelect">
+        <!-- Will be populated dynamically -->
+      </select>
+
+      <div class="view-section">
+        <label class="section-title">Select a view</label>
+        <div class="view-options-segmented">
+          <label for="defaultView" class="segmented-button">
+            <input type="radio" id="defaultView" name="viewType" value="default" checked disabled>
+            <span>Default columns</span>
+          </label>
+          <label for="allColumnsView" class="segmented-button">
+            <input type="radio" id="allColumnsView" name="viewType" value="all" disabled>
+            <span>All columns</span>
+          </label>
+        </div>
+      </div>
+
+      <button id="generate"><span id="generateText">Generate Table</span><span class="spinner"></span></button>
+      <div id="error" class="error"></div>
+      <div id="success" class="success"></div>
+    </div>
+  </div>
+
+  <div id="create-new-tab" class="tab-content">
+    <div class="section">
+      <label class="section-title">Select all columns as needed</label>
+      <div class="dropdown-container">
+        <select id="columnSelect" class="selected-value" required onmousedown="return false;" onfocus="this.blur();">
+          <option value="" disabled selected>Choose columns...</option>
+          <option value="Checkbox">Checkbox</option>
+          <option value="Bill Narration">Bill Narration</option>
+          <option value="Payment Title">Payment Title</option>
+          <option value="Vendor">Vendor</option>
+          <option value="User Name">User Name</option>
+          <option value="Beneficiary">Beneficiary</option>
+          <option value="ID">ID</option>
+          <option value="UTR">UTR</option>
+          <option value="PO Number">PO Number</option>
+          <option value="Due Date">Due Date</option>
+          <option value="Posting Date">Posting Date</option>
+          <option value="Cost Centre">Cost Centre</option>
+          <option value="Uploaded By">Uploaded By</option>
+          <option value="Created By">Created By</option>
+          <option value="Authorised By">Authorised By</option>
+          <option value="Created At">Created At</option>
+          <option value="Business Unit">Business Unit</option>
+          <option value="Payment Mode">Payment Mode</option>
+          <option value="Bill Amount">Bill Amount</option>
+          <option value="Payment Amount">Payment Amount</option>
+          <option value="Bill Date">Bill Date</option>
+          <option value="Credited On">Credited On</option>
+          <option value="Branches">Branches</option>
+          <option value="Status">Status</option>
+          <option value="Mysa Category">Mysa Category</option>
+          <option value="Department">Department</option>
+          <option value="Due Amount">Due Amount</option>
+          <option value="Bill">Bill</option>
+          <option value="Beneficiary Account">Beneficiary Account</option>
+          <option value="Authorised on">Authorised on</option>
+          <option value="Pay by date">Pay by date</option>
+          <option value="Pan">Pan</option>
+          <option value="Gstin">Gstin</option>
+          <option value="Category">Category</option>
+          <option value="Outstanding">Outstanding</option>
+          <option value="This Month's Spend">This Month's Spend</option>
+          <option value="Type">Type</option>
+          <option value="Role">Role</option>
+          <option value="User type">User type</option>
+          <option value="COA/Ledger">COA/Ledger</option>
+          <option value="Manager(s)">Manager(s)</option>
+          <option value="Paid through">Paid through</option>
+          <option value="Email">Email</option>
+          <option value="Link">Link</option>
+          <option value="Date">Date</option>
+          <option value="Running balance">Running balance</option>
+          <option value="Month">Month</option>
+          <option value="Section">Section</option>
+          <option value="Description">Description</option>
+          <option value="Business type">Business type</option>
+          <option value="Amount">Amount</option>
+          <option value="> 60 days">> 60 days</option>
+          <option value="40 - 60 days">40 - 60 days</option>
+          <option value="31 - 45 days">31 - 45 days</option>
+          <option value="1 - 30 days">1 - 30 days</option>
+          <option value="Total Overdue">Total Overdue</option>
+          <option value="Approved By">Approved By</option>
+          <option value="Next Approved By">Next Approved By</option>
+          <option value="Fin Review By">Fin Review By</option>
+          <option value="Reviewed By">Reviewed By</option>
+          <option value="RRN/UTR">RRN/UTR</option>
+          <option value="Pay On">Pay On</option>
+          <option value="Title">Title</option>
+          <option value="Payment Method">Payment Method</option>
+          <option value="Authorizers">Authorizers</option>
+          <option value="Paid At">Paid At</option>
+          <option value="Title/Narration">Title/Narration</option>
+          <option value="Narration">Narration</option>
+          <option value="Rejected By">Rejected By</option>
+          <option value="Created On">Created On</option>
+          <option value="Status (Accounting)">Status (Accounting)</option>
+          <option value="ERP Vendor">ERP Vendor</option>
+          <option value="Status (Vendor)">Status (Vendor)</option>
+          <option value="Status (Team settings)">Status (Team settings)</option>
+        </select>
+        <button id="clearColumnSelection" style="
+          position: absolute;
+          right: 32px; /* Position before the chevron with 12px gap */
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: auto;
+          padding: 0;
+          display: none; /* Hidden by default */
+        ">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.91536 4.08594L4.08203 9.91927M4.08203 4.08594L9.91536 9.91927" stroke="white" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="dropdown-list">
+          <!-- Options will be populated by JavaScript -->
+        </div>
+      </div>
+      <div class="info-message">
+        <span>Select a dummy column if you need to add a new column that doesn't exist in the component</span>
+      </div>
+      <button id="generateCustom" style="margin-top: 16px;"><span id="generateCustomText">Create Custom Table</span><span class="spinner"></span></button>
+      <div id="customError" class="error"></div>
+      <div id="customSuccess" class="success"></div>
+    </div>
+  </div>
+
   <script>
     const moduleSelect = document.getElementById('moduleSelect');
     const presetSelect = document.getElementById('presetSelect');
@@ -466,6 +816,7 @@
     const viewOptionsSegmented = document.querySelector('.view-options-segmented');
     const viewSection = document.querySelector('.view-section'); // Get reference to view section
     const spinner = generateBtn.querySelector('.spinner'); // Get reference to the spinner element
+    const generateText = document.getElementById('generateText'); // Get reference to the text span
 
     // Function to update the active class on segmented buttons
     function updateSegmentedButtons() {
@@ -519,27 +870,23 @@
     }
 
     function setLoading(isLoading) {
+      console.log('Setting loading state:', isLoading);
+      const spinner = generateBtn.querySelector('.spinner');
+      if (!spinner) {
+        console.error('Spinner element not found');
+        return;
+      }
+      
       generateBtn.disabled = isLoading;
       errorDiv.classList.remove('active');
       successDiv.classList.remove('active');
 
-      spinner.style.display = isLoading ? 'inline-block' : 'none';
-
-      // Find the actual text node inside the button
-      const textNode = [...generateBtn.childNodes].find(node => node.nodeType === Node.TEXT_NODE);
-
       if (isLoading) {
-        if (textNode && !generateBtn.dataset.originalText) {
-          generateBtn.dataset.originalText = textNode.textContent.trim();
-        }
-        if (textNode) {
-          textNode.textContent = 'Creating... ';
-        }
+        spinner.style.display = 'inline-block';
+        generateText.textContent = 'Creating... '; // Update text through the span
       } else {
-        if (textNode && generateBtn.dataset.originalText) {
-          textNode.textContent = generateBtn.dataset.originalText + ' ';
-          delete generateBtn.dataset.originalText;
-        }
+        spinner.style.display = 'none';
+        generateText.textContent = 'Generate Table '; // Update text through the span
       }
     }
 
@@ -651,7 +998,16 @@
         return;
       }
       
+      // Set loading state
       setLoading(true);
+
+      // Set timeout for loading state
+      const loadingTimeout = setTimeout(() => {
+        console.log('Loading timeout reached for preset table');
+        setLoading(false);
+        showError('Table generation timed out. Please try again.');
+      }, 10000); // 10 second timeout
+
       parent.postMessage({
         pluginMessage: {
           type: 'generate-preset-table',
@@ -660,6 +1016,30 @@
           viewType: selectedViewType // Include the selected view type
         }
       }, '*');
+
+      // Add one-time message handler for this generation
+      const messageHandler = (event) => {
+        const message = event.data.pluginMessage;
+        if (!message) return;
+
+        console.log('Received plugin message for preset table:', message);
+
+        if (message.type === 'generation-complete') {
+          console.log('Preset generation completed');
+          clearTimeout(loadingTimeout);
+          showSuccess('Table generated successfully!');
+          setLoading(false);
+          window.removeEventListener('message', messageHandler);
+        } else if (message.type === 'generation-error') {
+          console.log('Preset generation failed:', message.error);
+          clearTimeout(loadingTimeout);
+          showError(message.error);
+          setLoading(false);
+          window.removeEventListener('message', messageHandler);
+        }
+      };
+
+      window.addEventListener('message', messageHandler);
     });
 
     function showError(message) {
@@ -678,16 +1058,11 @@
       }, 3000);
     }
 
+    // Combined window.onmessage handler
     window.onmessage = (event) => {
       const message = event.data.pluginMessage;
       
-      if (message.type === 'generation-complete') {
-        showSuccess('Table generated successfully!');
-        setLoading(false);
-      } else if (message.type === 'generation-error') {
-        showError(message.error);
-        setLoading(false);
-      } else if (message.type === 'update-presets') {
+      if (message.type === 'update-presets') {
         presetSelect.innerHTML = '';
         message.presets.forEach(preset => {
           const option = document.createElement('option');
@@ -695,11 +1070,256 @@
           option.textContent = preset;
           presetSelect.appendChild(option);
         });
+      } else if (message.type === 'all-columns-data') {
+        allColumns = message.columns;
+        const dropdownItems = dropdownList.querySelector('.dropdown-items');
+        dropdownItems.innerHTML = '';
+        
+        Object.keys(allColumns).forEach(columnName => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = selectedColumns.has(columnName);
+          
+          const label = document.createElement('span');
+          label.textContent = columnName;
+          
+          item.appendChild(checkbox);
+          item.appendChild(label);
+          item.dataset.value = columnName;
+          
+          if (selectedColumns.has(columnName)) {
+            item.classList.add('selected');
+          }
+          
+          item.addEventListener('click', (e) => {
+            // Prevent click event when clicking the checkbox
+            if (e.target === checkbox) {
+              e.stopPropagation();
+            }
+            
+            if (selectedColumns.has(columnName)) {
+              selectedColumns.delete(columnName);
+              item.classList.remove('selected');
+              checkbox.checked = false;
+            } else {
+              selectedColumns.add(columnName);
+              item.classList.add('selected');
+              checkbox.checked = true;
+            }
+            updateSelectDisplay();
+          });
+          
+          dropdownItems.appendChild(item);
+        });
       }
     };
 
     // Add event listeners to the segmented buttons to update active class
     viewOptionsSegmented.addEventListener('change', updateSegmentedButtons);
+
+    // Add tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Add event listener for custom table generation
+    const generateCustomBtn = document.getElementById('generateCustom');
+    const columnSelect = document.getElementById('columnSelect');
+    const customErrorDiv = document.getElementById('customError');
+    const customSuccessDiv = document.getElementById('customSuccess');
+    const generateCustomText = document.getElementById('generateCustomText'); // Get reference to the custom text span
+
+    // Function to handle loading state for custom table generation
+    function setCustomLoading(isLoading) {
+      console.log('Setting custom loading state:', isLoading);
+      const spinner = generateCustomBtn.querySelector('.spinner');
+      if (!spinner) {
+        console.error('Spinner element not found in generateCustomBtn');
+        return;
+      }
+      
+      generateCustomBtn.disabled = isLoading;
+      customErrorDiv.classList.remove('active');
+      customSuccessDiv.classList.remove('active');
+
+      if (isLoading) {
+        spinner.style.display = 'inline-block';
+        generateCustomText.textContent = 'Creating... '; // Update text through the span
+      } else {
+        spinner.style.display = 'none';
+        generateCustomText.textContent = 'Generate Custom Table '; // Update text through the span
+      }
+    }
+
+    // Add selected-value class handling for column select
+    columnSelect.addEventListener('change', () => {
+      if (columnSelect.value) {
+        columnSelect.classList.add('selected-value');
+      } else {
+        columnSelect.classList.remove('selected-value');
+      }
+    });
+
+    // Add custom dropdown functionality
+    const dropdownList = document.querySelector('.dropdown-list');
+    const selectedColumns = new Set();
+    let allColumns = [];
+
+    // Populate dropdown list
+    function populateDropdownList() {
+      dropdownList.innerHTML = `
+        <div class="dropdown-search">
+          <input type="text" placeholder="Search columns..." />
+        </div>
+        <div class="dropdown-items"></div>
+      `;
+
+      const searchInput = dropdownList.querySelector('input');
+      searchInput.addEventListener('input', (e) => {
+        const searchText = e.target.value.toLowerCase();
+        const items = dropdownList.querySelectorAll('.dropdown-item');
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          if (text.includes(searchText)) {
+            item.classList.remove('hidden-item');
+          } else {
+            item.classList.add('hidden-item');
+          }
+        });
+      });
+
+      // Get all columns from ALL_COLUMNS
+      parent.postMessage({
+        pluginMessage: {
+          type: 'get-all-columns'
+        }
+      }, '*');
+    }
+
+    // Update the select display
+    function updateSelectDisplay() {
+      const clearColumnSelectionBtn = document.getElementById('clearColumnSelection');
+      if (selectedColumns.size === 0) {
+        columnSelect.value = '';
+        columnSelect.classList.remove('selected-value');
+        columnSelect.options[0].textContent = 'Choose columns...';
+        columnSelect.style.color = '#B0B0B0';
+        clearColumnSelectionBtn.style.display = 'none';
+      } else {
+        columnSelect.classList.add('selected-value');
+        // Update the display text to show selected count
+        columnSelect.options[0].textContent = `${selectedColumns.size} columns selected`;
+        columnSelect.style.color = '#FFFFFF';
+        clearColumnSelectionBtn.style.display = 'block';
+      }
+    }
+
+    // Toggle dropdown
+    columnSelect.addEventListener('click', (e) => {
+      e.preventDefault();
+      dropdownList.classList.toggle('active');
+      if (dropdownList.classList.contains('active')) {
+        populateDropdownList();
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!columnSelect.contains(e.target) && !dropdownList.contains(e.target)) {
+        dropdownList.classList.remove('active');
+      }
+    });
+
+    // Update generate button click handler
+    generateCustomBtn.addEventListener('click', () => {
+      console.log('Generate button clicked');
+      
+      if (selectedColumns.size === 0) {
+        customErrorDiv.textContent = 'Please select at least one column';
+        customErrorDiv.classList.add('active');
+        customSuccessDiv.classList.remove('active');
+        return;
+      }
+      
+      // Convert Set to Array to maintain order
+      const orderedColumns = Array.from(selectedColumns);
+      console.log('Selected columns:', orderedColumns);
+      
+      // Reset any previous states
+      customErrorDiv.classList.remove('active');
+      customSuccessDiv.classList.remove('active');
+      
+      // Set loading state
+      setCustomLoading(true);
+      
+      // Set timeout for loading state
+      const loadingTimeout = setTimeout(() => {
+        console.log('Loading timeout reached');
+        setCustomLoading(false);
+        customErrorDiv.textContent = 'Generation timed out. Please try again.';
+        customErrorDiv.classList.add('active');
+      }, 10000); // 10 second timeout
+      
+      // Send message to plugin
+      parent.postMessage({
+        pluginMessage: {
+          type: 'generate-custom-table',
+          columns: orderedColumns
+        }
+      }, '*');
+      
+      // Add one-time message handler for this generation
+      const messageHandler = (event) => {
+        const message = event.data.pluginMessage;
+        if (!message) return;
+        
+        console.log('Received plugin message:', message);
+        
+        if (message.type === 'custom-generation-complete') {
+          console.log('Custom generation completed');
+          clearTimeout(loadingTimeout);
+          customSuccessDiv.textContent = 'Custom table generated successfully!';
+          customSuccessDiv.classList.add('active');
+          customErrorDiv.classList.remove('active');
+          setCustomLoading(false);
+          window.removeEventListener('message', messageHandler);
+        } else if (message.type === 'custom-generation-error') {
+          console.log('Custom generation failed:', message.error);
+          clearTimeout(loadingTimeout);
+          customErrorDiv.textContent = message.error;
+          customErrorDiv.classList.add('active');
+          customSuccessDiv.classList.remove('active');
+          setCustomLoading(false);
+          window.removeEventListener('message', messageHandler);
+        }
+      };
+      
+      window.addEventListener('message', messageHandler);
+    });
+
+    // Add event listener for clearing column selection
+    const clearColumnSelectionBtn = document.getElementById('clearColumnSelection');
+    clearColumnSelectionBtn.addEventListener('click', () => {
+      selectedColumns.clear();
+      columnSelect.value = '';
+      columnSelect.classList.remove('selected-value');
+      updateSelectDisplay();
+    });
   </script>
 </body>
 </html> 
