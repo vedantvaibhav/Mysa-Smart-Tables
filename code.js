@@ -75,7 +75,8 @@ const ALL_COLUMNS = {
   "Created By": { name: "Created By", type: "text", componentKey: '48fe65fedfb86fd869d3e76138e4683b2ffd8c0c' },
   "Status (Accounting)": { name: "Status (Accounting)", type: "text", componentKey: '966756b8498df9ca06ee45b99455e6a12befea4e' },
   "ERP Vendor": { name: "ERP Vendor", type: "text", componentKey: '79a3dbfbdcdff2981115fd52ffe5bdcfd32facb0' },
-  "Status (Vendor)": { name: "Status (Vendor)", type: "text", componentKey: '277f0b39e338a8b6c75adb28afbc83745dfca7f9' }
+  "Status (Vendor)": { name: "Status (Vendor)", type: "text", componentKey: '277f0b39e338a8b6c75adb28afbc83745dfca7f9' },
+  "Status (Team settings)": { name: "Status (Team settings)", type: "text", componentKey: '8156f010edf85d9dab0854e285333494119a5b17' }
 };
 
 // Table presets with their column configurations nested under modules
@@ -164,7 +165,7 @@ const TABLE_PRESETS = {
   },
   "Team Settings": {
     "Active/Inactive": {
-      visibleColumns: ["Checkbox", "User Name", "Email", "Role", "Manager(s)", "Department", "Status"],
+      visibleColumns: ["Checkbox", "User Name", "Email", "Role", "Manager(s)", "Department", "Status (Team settings)"],
       hiddenColumns: []
     }
   },
